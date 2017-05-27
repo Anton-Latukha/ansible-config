@@ -1,2 +1,6 @@
 ---
-- hosts: debian-olya
+- hosts: debian-testing
+  remote_user: pyro
+  become: yes
+  roles:
+    - common

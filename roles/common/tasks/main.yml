@@ -1,0 +1,44 @@
+---
+#tasks:
+
+#  when: ansible_os_family == "Debian"
+
+  - name: Repos open Contrib and Non-free
+    apt_repository:
+      repo: deb http://ftp.ua.debian.org/debian/ stretch contrib non-free
+      
+#- name: Install Firefox...
+
+  - name: Firefox APT repository
+    apt_repository:
+      repo: deb http://http.debian.net/debian experimental main
+      
+  - name: Firefox package
+    command: apt install -y -t experimental firefox
+
+#- name: Installing X2Go
+  - name: X2Go Dev key
+    apt_key:
+      keyserver: keys.gnupg.net
+      id: E1F958385BFE2B6E
+      
+  - name: X2Go APT repository
+    apt_repository:
+      repo: deb http://packages.x2go.org/debian stretch main
+      
+  - name: X2Go Keyring package
+    apt:
+      name: x2go-keyring
+      
+  - name: X2Go X2Go server package
+    apt:
+      name:
+        - x2goserver
+        - x2goserver-xsession
+      update_cache: yes
+  - name: Running X2Go service
+    service:
+      name: x2goserver.service
+      state: started
+      enabled: yes
+  
