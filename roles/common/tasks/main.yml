@@ -46,7 +46,9 @@
         - kvkbd
         - wine
         - kde-l10n-ru
-        
+        - fonts-liberation
+        - ttf-mscorefonts-installer
+      state: present
   
   - name: Install LXDM
     apt:
@@ -58,8 +60,14 @@
     apt_repository:
       repo: deb http://http.debian.net/debian experimental main
       
-  - name: Firefox package
-    command: apt install -y -t experimental firefox
+  - block:
+    - name: Firefox package present?
+      apt:
+        name: firefox
+        state: present
+    rescue:
+      - name: Installing Firefox package
+        command: apt install -y -t experimental firefox
   
   - name: Firefox Localization
     apt:
@@ -108,7 +116,93 @@
       name: teamviewerd.service
       state: started
       enabled: yes
+      
+  - name: Install DeadBeef
+    apt:
+      deb: https://sourceforge.net/projects/deadbeef/files/debian/deadbeef-static_0.7.2-2_i386.deb/download
   
+  - name: Group Olya
+    group:
+      name: olya
+  
+  - name: User Olya
+    user:
+      name: olya
+      group: olya
+      groups:
+        - olya
+        - cdrom
+        - floppy
+        - audio
+        - dip
+        - video
+        - plugdev
+        - netdev
+        - bluetooth
+        - lpadmin
+        - scanner
+        - users
+        - disk
+        - games
+  
+  - name: LXDM default display manager
+    shell: 'sed -i "s%^/usr/bin/sddm%/usr/bin/lxdm%" /etc/X11/default-display-manager'
+    
+  - name: Open LXDM for Olya autologin
+    shell: 'sed -i "s/^# autologin=dgod/autologin=olya/" /etc/lxdm/lxdm.conf'
+    
+  - name: KDE as default LXDM login
+    shell: 'sed -i "s%^# session=/usr/bin/startlxde%session=/usr/bin/startkde%" /etc/lxdm/lxdm.conf'
+    
+  - name: Permit passwordless LXDM login
+    shell: 'sed -i "s/^# skip_password=1/skip_password=1/" /etc/lxdm/lxdm.conf'
+  
+#  - name: Open en_US.UTF-8 locale in config
+#    shell: 'sed -i "s/^# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen'
+  
+  - name: Open ru_RU.UTF-8 locale in config
+    shell: 'sed -i "s/^# ru_RU.UTF-8/ru_RU.UTF-8/" /etc/locale.gen'
+  
+  - name: Open ru_UA.UTF-8 locale in config
+    shell: 'sed -i "s/^# ru_UA.UTF-8/ru_UA.UTF-8/" /etc/locale.gen'
+    
+  - name: Build locales
+    shell: locale-gen
+    
+  - name: Creating /home/olya/.config/
+    file:
+      path: /home/olya/.config
+      state: directory
+  
+  - name: Check permissions for /home/olya/.config/
+    file:
+      path: /home/olya/.config
+      owner: olya
+      group: olya
+    
+  - name: Populating locale preferences
+    blockinfile:
+      create: yes
+      path: /home/olya/.config/locale.conf
+      block: |
+        LANG=ru_RU.UTF-8
+        LANGUAGE=ru_RU:ru_UA:en_US
+        LC_NUMERIC=ru_RU.UTF-8
+        LC_TIME=ru_RU.UTF-8
+        LC_MONETARY=ru_UA.UTF-8
+        LC_MESSAGES=ru_RU.UTF-8
+        LC_PAPER=ru_RU.UTF-8
+        LC_NAME=ru_RU.UTF-8
+        LC_ADDRESS=ru_RU.UTF-8
+        LC_TELEPHONE=ru_UA.UTF-8
+        LC_MEASUREMENT=ru_RU.UTF-8
+  
+  - name: Check locale preferences file permissions
+    file:
+      path: /home/olya/.config/locale.conf
+      owner: olya
+      group: olya
+    
 #  - name: Install Tor Browser
 #  apt-get install torbrowser-launcher -t stretch-backports
   
@@ -143,8 +237,6 @@
 #    - Skype
 #    - Viber
 #    - Telegram
-#    - TeamViewer
-#    - DeadBeef
 
 #  - name: Removing junk packages
 #    apt:
