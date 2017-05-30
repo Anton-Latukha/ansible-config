@@ -1,0 +1,142 @@
+---
+# This| Installing application packages and managing services
+
+#  - name: Disable SDDM service
+#    service:
+#      name: sddm.service
+#      state: stopped
+#      enabled: no
+
+#  when: ansible_os_family == "Debian"
+  
+- name: Pkg| Workaround - Aptitude (https://github.com/ansible/ansible/issues/18987)
+  apt:
+    name:
+      - aptitude
+  
+- name: Pkg| Contrib & Non-free
+  apt_repository:
+    repo: 'deb http://ftp.ua.debian.org/debian/ stretch contrib non-free'
+      
+- name: Pkg| Updating
+  apt:
+    upgrade: full
+            
+#  - name: Debian Multimedia Unofficial repository
+#    apt_repository:
+#      repo: deb http://www.deb-multimedia.org stretch main non-free
+      
+#  - name: Debian Multimedia Unofficial keyring
+#    apt:
+#      name: deb-multimedia-keyring
+      
+- name: Pkg| Packages pack
+  apt:
+    name:
+      - sddm
+      - mpv
+      - smplayer
+      - inkscape
+      - qbittorrent
+      - pidgin
+      - eog
+      - kvkbd
+      - wine
+      - kde-l10n-ru
+      - fonts-liberation
+      - ttf-mscorefonts-installer
+      - pysolfc
+      - blobby
+      - supertux
+      - sgt-puzzles
+      - extremetuxracer
+      - funguloids
+    state: present
+  
+#  - name: Pkg| LXDM
+#    apt:
+#      name:
+#        - lxdm
+#      install_recommends: no
+
+- name: Pkg| SDDM| Default
+  lineinfile:
+    path: '/etc/X11/default-display-manager'
+    line: '/usr/sbin/sddm'
+    state: present
+
+- name: Pkg| SDDM| Group video
+  group:
+    name: video
+  
+- name: Pkg| SDDM| In video group
+  user:
+    name: sddm
+    groups:
+      - sddm
+      - video
+
+- name: Pkg| Firefox| Experimental repo
+  apt_repository:
+    repo: 'deb http://http.debian.net/debian experimental main'
+    
+- block:
+  - name: Pkg| Firefox| Is installed?
+    apt:
+      name: firefox
+      state: present
+  rescue:
+    - name: Pkg| Firefox| Install
+      command: 'apt install -y -t experimental firefox'
+  
+- name: Pkg| Firefox| Lang
+  apt:
+    name: firefox-l10n-ru
+
+#  - name: Running LXDM service
+#    service:
+#      name: lxdm.service
+#      state: started
+#      enabled: yes
+  
+  #- name: Installing X2Go
+
+- name: Pkg| X2Go| Dev key
+  apt_key:
+    keyserver: keys.gnupg.net
+    id: E1F958385BFE2B6E
+    
+- name: Pkg| X2Go| Repo
+  apt_repository:
+    repo: 'deb http://packages.x2go.org/debian stretch main'
+    
+- name: Pkg| X2Go| Keyring
+  apt:
+    name: x2go-keyring
+    
+- name: Pkg| X2Go| Server
+  apt:
+    name:
+      - x2goserver
+      - x2goserver-xsession
+    update_cache: yes
+
+- name: Pkg| X2Go| Service
+  service:
+    name: x2goserver.service
+    state: started
+    enabled: yes
+
+- name: Pkg| TeamViewer| Install
+  apt:
+    deb: 'https://download.teamviewer.com/download/teamviewer_i386.deb'
+
+- name: Pkg| TeamViewer| Service
+  service:
+    name: teamviewerd.service
+    state: started
+    enabled: yes
+      
+- name: Pkg| DeadBeef
+  apt:
+    deb: 'https://sourceforge.net/projects/deadbeef/files/debian/deadbeef-static_0.7.2-2_i386.deb/download'

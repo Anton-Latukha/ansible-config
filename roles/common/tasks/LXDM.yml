@@ -1,0 +1,22 @@
+---
+# This| LXDM conf
+
+- name: LXDM| Default display manager
+  lineinfile:
+    create: yes
+    path: '/etc/X11/default-display-manager'
+    line: '/usr/sbin/lxdm'
+  
+- name: LXDM| SDDM not default
+  lineinfile:
+    path: '/etc/X11/default-display-manager'
+    line: '/usr/sbin/sddm'
+    state: absent
+    
+- name: LXDM| Olya autologin to KDE, password-less entry
+  blockinfile:
+    path: '/etc/lxdm/lxdm.conf'
+    block: |
+      autologin=olya
+      session=/usr/bin/startkde
+      skip_password=1

@@ -1,0 +1,26 @@
+---
+# This| User&groups
+
+- name: Usr| Group Olya
+  group:
+    name: olya
+  
+- name: Usr| Olya with groups
+  user:
+    name: olya
+    group: olya
+    groups:
+      - olya
+      - cdrom
+      - floppy
+      - audio
+      - dip
+      - video
+      - plugdev
+      - netdev
+      - bluetooth
+      - lpadmin
+      - scanner
+      - users
+      - disk
+      - games

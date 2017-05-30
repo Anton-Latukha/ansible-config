@@ -1,5 +1,5 @@
 ---
-- hosts: debian-testing
+- hosts: debian-olya
   remote_user: pyro
   become: yes
   roles:

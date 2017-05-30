@@ -1,0 +1,44 @@
+---
+# This| Language setup
+
+- name: Lang| Open ru_RU.UTF-8, ru_UA.UTF-8 locales
+  blockinfile:
+    path: '/etc/locale.gen'
+    block: |
+      ru_RU.UTF-8 UTF-8
+      ru_UA.UTF-8 UTF-8
+      us_EN.UTF-8 UTF-8
+    state: present
+    
+- name: Lang| Build locales
+  command: '/usr/sbin/locale-gen'
+
+- name: Lang| Creating Olya .config folder
+  file:
+    path: /home/olya/.config
+    state: directory
+  
+- name: Lang| Populating Olya locale preferences
+  blockinfile:
+    create: yes
+    path: /home/olya/.config/locale.conf
+    block: |
+      LANG=ru_RU.UTF-8
+      LANGUAGE=ru_RU:ru_UA:en_US
+      LC_NUMERIC=ru_RU.UTF-8
+      LC_TIME=ru_RU.UTF-8
+      LC_MONETARY=ru_UA.UTF-8
+      LC_MESSAGES=ru_RU.UTF-8
+      LC_PAPER=ru_RU.UTF-8
+      LC_NAME=ru_RU.UTF-8
+      LC_ADDRESS=ru_RU.UTF-8
+      LC_TELEPHONE=ru_UA.UTF-8
+      LC_MEASUREMENT=ru_RU.UTF-8
+        
+- name: Lang| Permissions for /home/olya/.config/
+  file:
+    path: /home/olya/.config
+    recurse: yes
+    state: directory
+    owner: olya
+    group: olya
