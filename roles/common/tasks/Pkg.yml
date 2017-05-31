@@ -51,6 +51,24 @@
       - sgt-puzzles
       - extremetuxracer
       - funguloids
+      - hunspell-ru
+      - hunspell-uk
+      - hyphen-ru
+      - hyphen-uk
+      - libreoffice-help-ru
+      - libreoffice-l10n-ru
+      - libreoffice-l10n-uk
+      - libreoffice-lightproof-en
+      - libreoffice-lightproof-ru-ru
+      - mythes-ru
+      - mythes-uk
+      - rsync
+      - lynis
+      - chkrootkit
+      - clamav
+#      - unattended-upgrades
+#      - apt-listchanges
+#      - exim4
     state: present
   
 #  - name: Pkg| LXDM
@@ -62,7 +80,7 @@
 - name: Pkg| SDDM| Default
   lineinfile:
     path: '/etc/X11/default-display-manager'
-    line: '/usr/sbin/sddm'
+    line: '/usr/bin/sddm'
     state: present
 
 - name: Pkg| SDDM| Group video
