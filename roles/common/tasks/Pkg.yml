@@ -66,8 +66,8 @@
       - lynis
       - chkrootkit
       - clamav
-#      - unattended-upgrades
-#      - apt-listchanges
+      - unattended-upgrades
+      - apt-listchanges
 #      - exim4
     state: present
   
@@ -142,8 +142,8 @@
 - name: Pkg| X2Go| Service
   service:
     name: x2goserver.service
-    state: started
-    enabled: yes
+    state: stopped
+    enabled: no
 
 - name: Pkg| TeamViewer| Install
   apt:
